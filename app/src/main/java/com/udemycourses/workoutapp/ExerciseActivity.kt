@@ -10,6 +10,7 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.udemycourses.workoutapp.databinding.ActivityExerciseBinding
 import java.util.*
 import kotlin.collections.ArrayList
@@ -21,14 +22,16 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var timer: CountDownTimer? = null
     private var progress = 0
 
-    private var totalRestTime : Long = 10000
-    private var totalExerciseTime : Long = 12000//30000
+    private var totalRestTime : Long = 3000//10000
+    private var totalExerciseTime : Long = 3000//30000
 
     private var exerciseList : ArrayList<ExerciseModel>? = null
     private var currentExercisePosition = -1 //When start, we'll start increasing this value by 1 after each exercise, so first value will be 0, which is arrayList's first element
 
     private var tts : TextToSpeech? = null
     private var player : MediaPlayer? = null
+
+    private var exerciseAdapter : ExerciseStatusAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +53,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         tts = TextToSpeech(this,this )
 
-        // Delay the first call to speakOutTwoPhrases by 500 milliseconds
+        // Delay the first call to speakOutTwoPhrases by 500 milliseconds in order the tts to fully initialize
         Handler().postDelayed({
             speakOutTwoPhrases(
                 binding?.tvUpcomingExerciseLabel?.text.toString().substring(0, binding?.tvUpcomingExerciseLabel?.text.toString().length - 1),
@@ -59,9 +62,18 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }, 500)
 
         setupRestView()
+        setupExerciseStatusRecyclerView()
 
+        //Manually highlighting just the first item of the recycler view as the upcoming and selected exercise, as its not been highlighted somewhere else before that point
+        exerciseList!![currentExercisePosition+1].setIsSelected(true)
+        exerciseAdapter!!.notifyDataSetChanged()
 
+    }
 
+    private fun setupExerciseStatusRecyclerView(){
+        binding?.rvExerciseStatus?.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false)
+        exerciseAdapter = ExerciseStatusAdapter(exerciseList!!)
+        binding?.rvExerciseStatus?.adapter = exerciseAdapter
     }
 
     private fun setupRestView() {
@@ -111,6 +123,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         private fun setRestProgressBar() {
             binding?.restProgressBar?.progress = progress
 
+
+
             timer = object : CountDownTimer(totalRestTime, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
 
@@ -128,6 +142,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                         Toast.LENGTH_SHORT
                     ).show()
                     currentExercisePosition++
+
+
                     setupExerciseView()
                 }
             }.start()
@@ -184,6 +200,13 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
 
                 override fun onFinish() {
+
+                    //Notify the Recycler View adapter that this exercise has finished so that is not selected and to change the corresponding item's background to the one for completed exercises
+                    exerciseList!![currentExercisePosition].setIsSelected(false)
+                    exerciseList!![currentExercisePosition].setIsCompleted(true)
+                    exerciseAdapter!!.notifyDataSetChanged()
+                    setupExerciseView()
+
                     if (currentExercisePosition < exerciseList?.size!! - 1) {
                         Toast.makeText(
                             this@ExerciseActivity,
@@ -194,6 +217,11 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                             "Please take a rest for the next ten seconds",
                             "Very good! Keep it up!"
                         )
+
+                        //Notify the Recycler View adapter that the next exercise item is being selected so to change its background accordingly to highlight it
+                        exerciseList!![currentExercisePosition+1].setIsSelected(true)
+                        exerciseAdapter!!.notifyDataSetChanged()
+
                         setupRestView()
                     } else {
                         Toast.makeText(
