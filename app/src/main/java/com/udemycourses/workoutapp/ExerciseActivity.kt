@@ -1,5 +1,7 @@
 package com.udemycourses.workoutapp
 
+import android.app.Dialog
+import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +14,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.udemycourses.workoutapp.databinding.ActivityExerciseBinding
+import com.udemycourses.workoutapp.databinding.DialogCustomBackConfirmationBinding
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -22,8 +25,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var timer: CountDownTimer? = null
     private var progress = 0
 
-    private var totalRestTime : Long = 3000//10000
-    private var totalExerciseTime : Long = 3000//30000
+    private var totalRestTime : Long = 1  //10 - (in seconds)
+    private var totalExerciseTime : Long = 1//30 - ( in seconds)
 
     private var exerciseList : ArrayList<ExerciseModel>? = null
     private var currentExercisePosition = -1 //When start, we'll start increasing this value by 1 after each exercise, so first value will be 0, which is arrayList's first element
@@ -45,11 +48,14 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
+        binding?.toolbarExercise?.setNavigationOnClickListener {
+            //onBackPressedDispatcher.onBackPressed()
+            customDialogForBackButton()
+        }
+
         exerciseList = Constants.defaultExerciseList()
 
-        binding?.toolbarExercise?.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+
 
         tts = TextToSpeech(this,this )
 
@@ -68,6 +74,26 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         exerciseList!![currentExercisePosition+1].setIsSelected(true)
         exerciseAdapter!!.notifyDataSetChanged()
 
+    }
+
+    private fun customDialogForBackButton() {
+        val customDialog  = Dialog(this)
+        val dialogBinding = DialogCustomBackConfirmationBinding.inflate(layoutInflater)
+        customDialog.setContentView(dialogBinding.root)
+
+        customDialog.setCanceledOnTouchOutside(false)
+        dialogBinding.yesBtn.setOnClickListener {
+            this@ExerciseActivity.finish()
+            customDialog.dismiss()
+        }
+        dialogBinding.noBtn.setOnClickListener {
+            customDialog.dismiss()
+        }
+        customDialog.show()
+    }
+
+    override fun onBackPressed() {
+        customDialogForBackButton()
     }
 
     private fun setupExerciseStatusRecyclerView(){
@@ -125,22 +151,17 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
 
 
-            timer = object : CountDownTimer(totalRestTime, 1000) {
+            timer = object : CountDownTimer(totalRestTime * 1000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
 
                     progress++
-                    val fullProgress = (totalRestTime / 1000).toInt()
+                    val fullProgress = ((totalRestTime*1000) / 1000).toInt()
                     binding?.restProgressBar?.progress = fullProgress - progress
                     binding?.tvTimer?.text = (fullProgress - progress).toString()
 
                 }
 
                 override fun onFinish() {
-                    Toast.makeText(
-                        this@ExerciseActivity,
-                        "Here now we will start the exercise",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     currentExercisePosition++
 
 
@@ -187,10 +208,10 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         private fun setupExerciseProgressBar() {
             binding?.exerciseProgressBar?.progress = progress
-            timer = object : CountDownTimer(totalExerciseTime, 1000) {
+            timer = object : CountDownTimer(totalExerciseTime * 1000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     progress++
-                    val fullProgress = (totalExerciseTime / 1000).toInt()
+                    val fullProgress = ((totalExerciseTime * 1000) / 1000).toInt()
                     binding?.exerciseProgressBar?.progress = fullProgress - progress
                     binding?.tvExerciseTimer?.text = (fullProgress - progress).toString()
 
@@ -201,18 +222,16 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
                 override fun onFinish() {
 
-                    //Notify the Recycler View adapter that this exercise has finished so that is not selected and to change the corresponding item's background to the one for completed exercises
-                    exerciseList!![currentExercisePosition].setIsSelected(false)
-                    exerciseList!![currentExercisePosition].setIsCompleted(true)
-                    exerciseAdapter!!.notifyDataSetChanged()
+
                     setupExerciseView()
 
                     if (currentExercisePosition < exerciseList?.size!! - 1) {
-                        Toast.makeText(
-                            this@ExerciseActivity,
-                            "Here now we will take some rest before next exercise",
-                            Toast.LENGTH_SHORT
-                        ).show()
+
+                        //Notify the Recycler View adapter that this exercise has finished so that is not selected and to change the corresponding item's background to the one for completed exercises
+                        exerciseList!![currentExercisePosition].setIsSelected(false)
+                        exerciseList!![currentExercisePosition].setIsCompleted(true)
+                        exerciseAdapter!!.notifyDataSetChanged()
+
                         speakOutTwoPhrases(
                             "Please take a rest for the next ten seconds",
                             "Very good! Keep it up!"
@@ -224,15 +243,9 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
                         setupRestView()
                     } else {
-                        Toast.makeText(
-                            this@ExerciseActivity,
-                            "Congratulations, you 've completed the exercise session.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        speakOutTwoPhrases(
-                            "Congratulations",
-                            "You 've completed the exercise session."
-                        )
+                        finish()
+                        val intent = Intent(this@ExerciseActivity, FinishScreenActivity::class.java)
+                        startActivity(intent)
                     }
                 }
 

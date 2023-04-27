@@ -4,7 +4,7 @@
 
     <queries>
         <intent>
-            <action android:name="android.intent.action.TTS_SERVICE"/>
+            <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
     </queries>
 
@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkoutApp"
         tools:targetApi="31">
+        <activity
+            android:name=".FinishScreenActivity"
+            android:exported="false" />
         <activity
             android:name=".ExerciseActivity"
             android:exported="false" />
