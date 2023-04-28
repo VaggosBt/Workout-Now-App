@@ -11,7 +11,8 @@ import android.os.Handler
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
-import android.widget.Toast
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.udemycourses.workoutapp.databinding.ActivityExerciseBinding
 import com.udemycourses.workoutapp.databinding.DialogCustomBackConfirmationBinding
@@ -77,19 +78,103 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun customDialogForBackButton() {
+
+
+
+
+            if(timer != null){
+                timer!!.cancel()
+            }
+
+        Handler().postDelayed({
         val customDialog  = Dialog(this)
         val dialogBinding = DialogCustomBackConfirmationBinding.inflate(layoutInflater)
         customDialog.setContentView(dialogBinding.root)
 
         customDialog.setCanceledOnTouchOutside(false)
+
+
+
         dialogBinding.yesBtn.setOnClickListener {
             this@ExerciseActivity.finish()
             customDialog.dismiss()
         }
         dialogBinding.noBtn.setOnClickListener {
             customDialog.dismiss()
+
+            if(binding?.flRestProgressBar?.visibility == View.VISIBLE){
+                resumeTimer(binding?.restProgressBar, binding?.tvTimer, totalRestTime,false)
+            }else{
+                resumeTimer(binding?.exerciseProgressBar, binding?.tvExerciseTimer, totalExerciseTime,true)
+            }
+
         }
         customDialog.show()
+        }, 200)
+    }
+
+    private fun resumeTimer(progressBar: ProgressBar?, timerTextView : TextView?, totalTime: Long, isExerciseTimer: Boolean) {
+        //TODO("Fully implement")
+
+       progressBar?.progress = progress
+
+
+
+        timer = object : CountDownTimer((totalTime * 1000), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+
+                progress++
+                Log.e("PROGRESS_RESUME", progress.toString())
+                val fullProgress = ((totalTime*1000) / 1000).toInt()
+                progressBar?.progress = fullProgress - progress
+                timerTextView?.text = (fullProgress - progress).toString()
+                if(fullProgress-progress <= 0){
+                    onFinish()
+                }
+
+            }
+
+            override fun onFinish() {
+                //Making the necessary controls and actions if the finished timer is a finished exercise
+                if(isExerciseTimer){
+
+                    //setupExerciseView()   //TODO (SEE IF THIS LINE OF CODE IS REDUNDANT)
+
+                    if (currentExercisePosition < exerciseList?.size!! - 1) {
+
+                        //Notify the Recycler View adapter that this exercise has finished so that is not selected and to change the corresponding item's background to the one for completed exercises
+                        exerciseList!![currentExercisePosition].setIsSelected(false)
+                        exerciseList!![currentExercisePosition].setIsCompleted(true)
+                        exerciseAdapter!!.notifyDataSetChanged()
+
+                        speakOutTwoPhrases(
+                            "Please take a rest for the next ten seconds",
+                            "Very good! Keep it up!"
+                        )
+
+                        //Notify the Recycler View adapter that the next exercise item is being selected so to change its background accordingly to highlight it
+                        exerciseList!![currentExercisePosition+1].setIsSelected(true)
+                        exerciseAdapter!!.notifyDataSetChanged()
+
+                        setupRestView()
+
+                    } else {
+                        finish()
+                        val intent = Intent(this@ExerciseActivity, FinishScreenActivity::class.java)
+                        startActivity(intent)
+                    }
+
+                }else{ //Making the necessary actions if the finished timer is a finished rest time period
+
+                    currentExercisePosition++
+                    setupExerciseView()
+
+                }
+            }
+        }.start()
+
+
+
     }
 
     override fun onBackPressed() {
@@ -123,6 +208,9 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             e.printStackTrace()
         }
 
+        player?.setOnCompletionListener {
+            player?.start()
+        }
 
             binding?.flRestProgressBar?.visibility = View.VISIBLE
             binding?.tvTitle?.visibility = View.VISIBLE
@@ -155,6 +243,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 override fun onTick(millisUntilFinished: Long) {
 
                     progress++
+                    Log.e("PROGRESS_REST", progress.toString())
                     val fullProgress = ((totalRestTime*1000) / 1000).toInt()
                     binding?.restProgressBar?.progress = fullProgress - progress
                     binding?.tvTimer?.text = (fullProgress - progress).toString()
@@ -191,6 +280,10 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 e.printStackTrace()
             }
 
+            player?.setOnCompletionListener {
+                player?.start()
+            }
+
             binding?.flRestProgressBar?.visibility = View.INVISIBLE
             binding?.tvTitle?.visibility = View.INVISIBLE
             binding?.tvUpcomingExerciseLabel?.visibility = View.INVISIBLE
@@ -211,6 +304,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             timer = object : CountDownTimer(totalExerciseTime * 1000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     progress++
+                    Log.e("PROGRESS_EXERCISE", progress.toString())
                     val fullProgress = ((totalExerciseTime * 1000) / 1000).toInt()
                     binding?.exerciseProgressBar?.progress = fullProgress - progress
                     binding?.tvExerciseTimer?.text = (fullProgress - progress).toString()
@@ -223,7 +317,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 override fun onFinish() {
 
 
-                    setupExerciseView()
+                    //setupExerciseView()   //TODO (SEE IF THIS LINE OF CODE IS REDUNDANT)
 
                     if (currentExercisePosition < exerciseList?.size!! - 1) {
 
@@ -277,6 +371,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             tts!!.speak(phrase2, TextToSpeech.QUEUE_ADD, null, utteranceText)
         }
 
+
+
         override fun onDestroy() {
             super.onDestroy()
 
@@ -293,6 +389,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
             if (player != null) {
                 player!!.stop()
+                player!!.release()
             }
         }
 

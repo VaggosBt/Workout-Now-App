@@ -15,6 +15,9 @@
     <color name="colorAccent">#008F24</color>
     <color name="lightGray">#C4C4C4</color>
 
+    <color name="textColor">#FF000000</color>
+    <color name="inputText">#FF000000</color>
+
     <color name="toolbar_color_control_normal">#000000</color>
 
 </resources>
