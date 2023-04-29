@@ -27,6 +27,7 @@ class FinishScreenActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         if(supportActionBar != null){
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title = "Workout Now"
         }
 
 

@@ -47,6 +47,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         if(supportActionBar != null){
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title = "Workout Now"
         }
 
         binding?.toolbarExercise?.setNavigationOnClickListener {

@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@id/flStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toStartOf="@id/flHistory">
 
         <TextView
             android:layout_width="wrap_content"
@@ -59,18 +59,55 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/flHistory"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/item_circular_color_accent_background"
+        android:orientation="vertical"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flBMI"
+        app:layout_constraintTop_toBottomOf="@id/flStart">
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_history"
+            />
+
+    </FrameLayout>
+
     <TextView
+        android:id="@+id/tvBmiCalculator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Calculator"
-        android:textSize="23dp"
-        android:textColor="@color/colorAccent"
-        android:textStyle="bold"
         android:layout_marginTop="10dp"
+        android:text="Calculator"
+        android:textColor="@color/colorAccent"
+        android:textSize="23dp"
+        android:textStyle="bold"
 
+        app:layout_constraintEnd_toStartOf="@id/tvHistory"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/flBMI" />
+
+    <TextView
+        android:id="@+id/tvHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="History"
+        android:textColor="@color/colorAccent"
+        android:textSize="23dp"
+        android:paddingRight="11dp"
+        android:textStyle="bold"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/flBMI"
+        app:layout_constraintStart_toEndOf="@id/tvBmiCalculator"
+        app:layout_constraintTop_toBottomOf="@+id/flHistory"
 
         />
 
