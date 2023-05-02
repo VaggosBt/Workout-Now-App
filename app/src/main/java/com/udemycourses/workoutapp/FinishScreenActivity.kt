@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.udemycourses.workoutapp.databinding.ActivityFinishScreenBinding
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 class FinishScreenActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -30,9 +33,6 @@ class FinishScreenActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             supportActionBar?.title = "Workout Now"
         }
 
-
-
-
         binding?.toolbarFinishScreen?.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
@@ -47,6 +47,9 @@ class FinishScreenActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 "Good job!"
             )
         },500)
+
+        val historyDao = (application as WorkoutApp).db.historyDao()
+        addDateToDatabase(historyDao)
 
     }
 
@@ -73,6 +76,25 @@ class FinishScreenActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         tts!!.speak(phrase2, TextToSpeech.QUEUE_ADD, null, utteranceText)
     }
 
+    private fun addDateToDatabase(historyDao: HistoryDao){
+
+        val c = Calendar.getInstance()
+        val dateTime = c.time
+        Log.e("Date", " $dateTime")
+
+        val sdf = SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault())
+        val date = sdf.format(dateTime)
+        Log.e("Formatted Date: ", " $date")
+
+        lifecycleScope.launch{
+            historyDao.insert(HistoryEntity(date))
+            Log.e("Date:", "Added...")
+        }
+
+
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         binding = null
@@ -83,5 +105,4 @@ class FinishScreenActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
 
     }
-
 }

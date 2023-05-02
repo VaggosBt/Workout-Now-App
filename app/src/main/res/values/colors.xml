@@ -8,7 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#B2333333</color>
+
     <color name="appThemeSkyBlue">#75C6FA</color>
+    <color name="appRed">#FE3847</color>
+
 
     <color name="colorPrimary">#B2212121</color>
     <color name="colorPrimaryDark">#B2212121</color>

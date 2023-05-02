@@ -26,8 +26,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var timer: CountDownTimer? = null
     private var progress = 0
 
-    private var totalRestTime : Long = 1  //10 - (in seconds)
-    private var totalExerciseTime : Long = 1//30 - ( in seconds)
+    private var totalRestTime : Long = 10 // (in seconds)
+    private var totalExerciseTime : Long = 30 // - ( in seconds)
 
     private var exerciseList : ArrayList<ExerciseModel>? = null
     private var currentExercisePosition = -1 //When start, we'll start increasing this value by 1 after each exercise, so first value will be 0, which is arrayList's first element

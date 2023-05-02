@@ -18,4 +18,43 @@
 
         />
 
+    <TextView
+        android:id="@+id/tvHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="COMPLETED EXERCISES"
+        android:textSize="18sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+
+        app:layout_constraintTop_toBottomOf="@id/toolbarHistoryActivity"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+
+        app:layout_constraintTop_toBottomOf="@id/tvHistory"
+        />
+
+    <TextView
+        android:id="@+id/tvNoDataAvailable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="NO DATA AVAILABLE"
+        android:textColor="@color/inputText"
+        android:textSize="18sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+
+        app:layout_constraintTop_toBottomOf="@id/toolbarHistoryActivity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
