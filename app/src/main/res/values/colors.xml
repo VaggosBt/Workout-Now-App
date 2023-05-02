@@ -9,9 +9,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#B2333333</color>
 
-    <color name="appThemeSkyBlue">#75C6FA</color>
+    <color name="appThemeSkyBlue">#42C5F1</color>
     <color name="appRed">#FE3847</color>
 
+    <color name="redStrong">#FCDC404B</color>
+    <color name="redWeak">#A8CF3742</color>
 
     <color name="colorPrimary">#B2212121</color>
     <color name="colorPrimaryDark">#B2212121</color>

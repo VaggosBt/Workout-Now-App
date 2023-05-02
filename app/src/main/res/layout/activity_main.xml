@@ -87,7 +87,7 @@
         android:layout_marginTop="10dp"
         android:text="Calculator"
         android:textColor="@color/appThemeSkyBlue"
-        android:textSize="23dp"
+        android:textSize="20dp"
         android:textStyle="bold"
 
         app:layout_constraintEnd_toStartOf="@id/tvHistory"
@@ -98,18 +98,18 @@
         android:id="@+id/tvHistory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
+        android:paddingRight="11dp"
         android:text="History"
         android:textColor="@color/appRed"
-        android:textSize="23dp"
-        android:paddingRight="11dp"
-        android:textStyle="bold"
+        android:textSize="20dp"
 
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvBmiCalculator"
-        app:layout_constraintTop_toBottomOf="@+id/flHistory"
 
-        />
+        app:layout_constraintTop_toBottomOf="@+id/flHistory" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

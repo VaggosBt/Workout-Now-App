@@ -31,10 +31,10 @@ class HistoryAdapter(private val items: ArrayList<String>) : RecyclerView.Adapte
 
         if(position % 2 == 0 ){
             holder.llHistoryItemMain.setBackgroundColor(ContextCompat.
-            getColor(holder.itemView.context, R.color.lightGray))
+            getColor(holder.itemView.context, R.color.redStrong))
         }else{
             holder.llHistoryItemMain.setBackgroundColor(ContextCompat.
-            getColor(holder.itemView.context, R.color.white))
+            getColor(holder.itemView.context, R.color.redWeak))
         }
     }
 }
